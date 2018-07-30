@@ -1,4 +1,4 @@
-import asyncio, datetime, discord, json, math, re, requests, string, time
+import discord, json, math, re, requests, string
 
 with open('grimoire_cleanup.json', 'r') as grimoire_cleanup_file:
     cleanup_params = json.load(grimoire_cleanup_file)
