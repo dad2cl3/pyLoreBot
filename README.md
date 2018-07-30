@@ -9,6 +9,10 @@ The backend is also written such that a web application can also search the data
 
 Right now, the search is performed within the PostgreSQL database using built-in full-text search functionality. The bot only supports searching based on all words provided.
 
+Discord limits the length of messages to 6000 characters. As a result, the bot will not return a response for results that exceed the limit. A future release will address the limitation.
+
+Discord also limits the amount of text within a field in a RichEmbed to 1024 characters. Results that exceed the limit will be broken into separate fields within the Discord message. 
+
 A normal response will appears as follows:
 
 ![alt text](https://github.com/dad2cl3/pyLoreBot/blob/master/doc/normalresponse.png "Normal Response")
