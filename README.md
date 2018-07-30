@@ -10,8 +10,9 @@ The backend is also written such that a web application can also search the data
 Right now, the search is performed within the PostgreSQL database using built-in full-text search functionality. The bot only supports searching based on all words provided.
 
 A normal response will appears as follows:
-![alt text]: (https://github.com/dad2cl3/pyLoreBot/blob/master/doc/normalresponse.png "Normal Response")
+
+![alt text](https://github.com/dad2cl3/pyLoreBot/blob/master/doc/normalresponse.png "Normal Response")
 
 An empty response will appear as follows:
 
-![alt text]: (https://github.com/dad2cl3/pyLoreBot/blob/master/doc/emptyresponse.png "Empty Response")
+![alt text](https://github.com/dad2cl3/pyLoreBot/blob/master/doc/emptyresponse.png "Empty Response")
