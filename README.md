@@ -8,3 +8,10 @@ The lore search can be initiated in Discord by typing the command !lore.
 The backend is also written such that a web application can also search the data through the same API that is used from within the Discord bot.
 
 Right now, the search is performed within the PostgreSQL database using built-in full-text search functionality. The bot only supports searching based on all words provided.
+
+A normal response will appears as follows:
+![alt text]: (https://github.com/dad2cl3/pyLoreBot/blob/master/doc/normalresponse.png "Normal Response")
+
+An empty response will appear as follows:
+
+![alt text]: (https://github.com/dad2cl3/pyLoreBot/blob/master/doc/emptyresponse.png "Empty Response")
