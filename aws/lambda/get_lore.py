@@ -39,18 +39,37 @@ def build_search_string(raw_string):
     # replace single space between words with &
     single_space = re.compile('([a-zA-Z0-9])\s([a-zA-Z0-9])')
     raw_string = re.sub(single_space, '\\1&\\2', raw_string)
+    print('Remove single space between words with & - {0}'.format(raw_string))
+
+    # replace single space around operators with operator
     allowed_punc = ['(', ')', '&', '!', '|']
 
     for punc in allowed_punc:
         punc_sub = re.compile('\s*\{0}\s*'.format(punc))
-
         raw_string = re.sub(punc_sub, punc, raw_string)
 
+    print('Replace single space around operators with operators - {0}'.format(raw_string))
     #raw_string = raw_string.replace(' and ', '&').replace(' or ', '|').replace(' & ', '&').replace(' | ', '|')
 
     # Look for ! not preceded by & or | and replace with &!
     invalid_not = re.compile('([a-zA-Z0-9])!')
     raw_string = re.sub(invalid_not, '\\1&!', raw_string)
+
+    # Look for combinations &| or |&
+    bad_combo = re.compile('&\|([&\|!]{1,})')
+    raw_string = re.sub(bad_combo, '&', raw_string)
+    print('Removing "&|" combination - {0}'.format(raw_string))
+
+    bad_combo = re.compile('\|&([&\|!]{1,})')
+    raw_string = re.sub(bad_combo, '|', raw_string)
+    print('Removing "|&" combination - {0}'.format(raw_string))
+
+    # Look for redundant operators other than parentheses
+    allowed_punc = ['&', '!', '\|']
+
+    for punc in allowed_punc:
+        punc_sub = re.compile('{0}'.format(punc) + '{1,}')
+        raw_string = re.sub(punc_sub, punc.replace('\\', ''), raw_string)
 
     # Look for mismatched ( and )
     open_parens = raw_string.count('(')
@@ -81,7 +100,7 @@ def handler(event, context):
     lore_search = build_search_string(event['search'])
 
     # open database connection
-    pg = pg8000.connect(
+    '''pg = pg8000.connect(
         host=os.environ['database_host'],
         port=5432,
         database=os.environ['database'],
@@ -108,6 +127,6 @@ def handler(event, context):
     pg.close()
 
     #print(lore)
-    return lore
+    return lore'''
 
-    #return lore_search
+    return lore_search
