@@ -100,7 +100,7 @@ def handler(event, context):
     lore_search = build_search_string(event['search'])
 
     # open database connection
-    '''pg = pg8000.connect(
+    pg = pg8000.connect(
         host=os.environ['database_host'],
         port=5432,
         database=os.environ['database'],
@@ -127,6 +127,6 @@ def handler(event, context):
     pg.close()
 
     #print(lore)
-    return lore'''
+    return lore
 
-    return lore_search
+    #return lore_search
