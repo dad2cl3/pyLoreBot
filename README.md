@@ -15,7 +15,7 @@ For example:
 
     !lore whisper of the worm produces 'whisper & of & the & worm'
 
-Also, the bot supports search keywords "AND", "NOT", and "OR" along with their corresponding operators "&", "!", and "|". "OR" or "|" and "NOT" or !, and operator precedence using parentheses.
+Also, the bot supports search keywords "AND", "NOT", and "OR" along with their corresponding operators "&", "!", and "|". Operator precedence using parentheses is also supported.
 
 For example:
 
@@ -36,9 +36,13 @@ The bot also scrubs the search string using the following rules
     10. Replace redundant operators other than parentheses with single operator
     11. Remove all parentheses if number of opening and closing parentheses doesn't match
 
+**Discord Limitations**
+
 Discord limits the length of messages to 6000 characters. As a result, the bot will not return a response for results that exceed the limit. A future release will address the limitation.
 
 Discord also limits the amount of text within a field in a RichEmbed to 1024 characters. Results that exceed the limit will be broken into separate fields within the Discord message. 
+
+**Discord Responses**
 
 A normal response in Discord will appears as follows:
 
@@ -47,3 +51,4 @@ A normal response in Discord will appears as follows:
 An empty response in Discord will appear as follows:
 
 ![alt text](https://github.com/dad2cl3/pyLoreBot/blob/master/doc/emptyresponse.png "Empty Response")
+

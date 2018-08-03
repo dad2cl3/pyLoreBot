@@ -30,7 +30,7 @@ BEGIN
 		AND tm.deleted IS NOT NULL
 		AND to_tsvector('english',
 			(json->>'cardName')::TEXT || ' ' ||
-			(json->>'cardIntro')::TEXT || ' ' ||
+			COALESCE((json->>'cardIntro')::TEXT, '') || ' ' ||
 			(json->>'cardDescription')::TEXT
 		) @@ to_tsquery('english', p_lore_search) = TRUE
 		ORDER BY tm.json->>'cardName'
