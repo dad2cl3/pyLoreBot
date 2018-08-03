@@ -73,7 +73,7 @@ The database function requires two parameters: *p_lore_type* and *p_lore_search*
 SELECT * FROM manifest.fn_search_lore('grimoire', 'eris&morn') AS t1(lore_entry JSONB);
 ```
 
-#Discord
+# Discord
 ### Scrubbing
 The original Destiny manifest data for grimoire cards contain HTML markup that the bot scrubs. A future release will move the scrubbing into the AWS Lambda function.
 ### Limitations
