@@ -96,13 +96,13 @@ async def on_message(message):
         # remove call to bot
         lore_search = message.content.replace('!lore ', '')
         # remove leading/trailing whitespace
-        lore_search = lore_search.strip()
+        #lore_search = lore_search.strip()
         # remove any punctuation
-        lore_search = lore_search.translate(lore_search.maketrans('','', string.punctuation))
+        #lore_search = lore_search.translate(lore_search.maketrans('','', string.punctuation))
 
         # replace spaces with ampersands
-        lore_search = re.sub('\s\s+', ' ', lore_search)
-        lore_search = lore_search.replace(' ', ' & ')
+        #lore_search = re.sub('\s\s+', ' ', lore_search)
+        #lore_search = lore_search.replace(' ', ' & ')
         print(lore_search)
 
         response = requests.get(config['url'], params={'search': lore_search})
