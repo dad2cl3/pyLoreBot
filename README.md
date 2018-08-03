@@ -1,21 +1,26 @@
 # pyLoreBot
-Simple Discord bot that allows Discord users to search Destiny 1 grimoire cards and Destiny 2 lore.
+Simple Discord bot that allows Discord users to search Destiny 1 grimoire cards and Destiny 2 lore written in Python.
 
 The project builds off the [destiny-manifest-manager](https://github.com/dad2cl3/destiny-manifest-manager) repository.
 
-The lore search can be initiated in Discord by typing the command !lore.
+The lore search can be initiated in Discord by typing the command "!lore".
 
-The backend is also written such that a web application can search the data through the same API that is used from within the Discord bot.
+Web applications can also leverage the API backend minus the Discord bot initiator "!lore".
 
-**Search Capabilities**
+### Backend
+The search functionality is supported by an AWS Lambda function written in Python sitting behind AWS API Gateway. The manifest data is stored in PostgreSQL.
 
-Right now, the search is performed within the PostgreSQL database using built-in full-text search functionality. The bot supports searching based on all words provided.
+    Bot <-> AWS API Gateway <-> AWS Lambda <-> PostgreSQL
+
+### Search Capabilities
+
+Right now, the search is performed within the PostgreSQL database using native [full-text search functionality](https://www.postgresql.org/docs/current/static/textsearch.html). The bot supports searching based on all words provided.
 
 For example:
 
     !lore whisper of the worm produces 'whisper & of & the & worm'
 
-Also, the bot supports search keywords "AND", "NOT", and "OR" along with their corresponding operators "&", "!", and "|". Operator precedence using parentheses is also supported.
+The bot supports search keywords "AND", "NOT", and "OR" along with their corresponding operators "&", "!", and "|". Operator precedence using parentheses is also supported.
 
 For example:
 
@@ -36,13 +41,48 @@ The bot also scrubs the search string using the following rules
     10. Replace redundant operators other than parentheses with single operator
     11. Remove all parentheses if number of opening and closing parentheses doesn't match
 
-**Discord Limitations**
+#Database Search
+### Grimoire
+Lore in the original Destiny game was mostly contained within grimoire cards and available within the Destiny manifest. Grimoire cards in the manifest are comprised of three key fields: *cardName*, *cardIntro*, and *cardDescription*. The three fields, along with a single space separator, are concatenated together prior to creating the lexemes.
+
+```postgresql
+    to_tsvector('english',
+	  (json->>'cardName')::TEXT || ' ' ||
+	  COALESCE((json->>'cardIntro')::TEXT, '') || ' ' ||
+	  (json->>'cardDescription')::TEXT
+	)
+```
+
+The *COALESCE* function is necessary because not all grimoire cards have a value for *cardIntro*.
+
+### Lore
+Grimoire cards were not brought forward to Destiny 2. Lore in Destiny 2 is mostly tied to inventory items that guardians can obtain within the game. Like grimoire cards, the lore is available within the Destiny 2 manifest. The lore is comprised of three key fields: *name*, *subtitle*, and *description*. As with grimoire, the three fields, along with a single space separator, are concatenated together prior to creating the lexemes.
+
+```postgresql
+  to_tsvector('english',
+    (dld.json->'displayProperties'->>'description')::TEXT || ' ' ||
+    (dld.json->>'subtitle')::TEXT || ' ' ||
+    (dld.json->'displayProperties'->>'name')::TEXT
+  )
+```
+
+### Database Function
+The database function requires two parameters: *p_lore_type* and *p_lore_search*. *p_lore_type can be either "grimoire" or "inventory". *p_lore_search* contains the scrubbed search string. The database response utilizes the function *JSONB_BUILD_OBJECT* to return each row in the query as a JSON object. Lastly, all results are returned as a set of data type RECORD. Troubleshooting can be accomplished using the following SQL query:
+
+```postgresql
+SELECT * FROM manifest.fn_search_lore('grimoire', 'eris&morn') AS t1(lore_entry JSONB);
+```
+
+#Discord
+### Scrubbing
+The original Destiny manifest data for grimoire cards contain HTML markup that the bot scrubs. A future release will move the scrubbing into the AWS Lambda function.
+### Limitations
 
 Discord limits the length of messages to 6000 characters. As a result, the bot will not return a response for results that exceed the limit. A future release will address the limitation.
 
 Discord also limits the amount of text within a field in a RichEmbed to 1024 characters. Results that exceed the limit will be broken into separate fields within the Discord message. 
 
-**Discord Responses**
+### Responses
 
 A normal response in Discord will appears as follows:
 
