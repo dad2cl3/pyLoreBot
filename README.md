@@ -14,7 +14,7 @@ The search functionality is supported by an AWS Lambda function written in Pytho
 
 ### Search Capabilities
 
-Right now, the search is performed within the PostgreSQL database using native [full-text search functionality](https://www.postgresql.org/docs/current/static/textsearch.html). The bot supports searching based on all words provided.
+Right now, the search is performed within the PostgreSQL database using native [full-text search functionality](https://www.postgresql.org/docs/current/static/textsearch.html). The bot supports searching based on all words provided and the default behavior for the bot is to replace uninterrupted whitespace between words with the *AND* operator "&".
 
 For example:
 
@@ -27,19 +27,41 @@ For example:
     !lore ikora and (eris or asher) produces 'ikora&(eris|asher)'
     !lore ikora & (eris | asher) also produces 'ikora&(eris|asher)'
 
-The bot also scrubs the search string using the following rules
+The bot scrubs the search string using the following rules
 
     1. Remove leading/trailing spaces
+        Example: " eris " becomes "eris"
+        
     2. Remove punctuation "#$%'*+,-./:;<=>?@[\]^_`{}~
+        Example: "</eris>" becomes "eris"
+        
     3. Remove closing and opening parentheses that are touching or only separated by whitespace
+        Example: "(eris and ikora) (cayde and zavala)" becomes "eris&ikora&cayde&zavala"
+        
     4. Remove redundant spaces
+        Example: "eris  morn" becomes "eris morn"
+        
     5. Replace the words "and", "not", and "or" with operators "&", "!", and "|", respectively
+        Example: "eris and morn" becomes "eris & morn"
+        
     6. Replace single space between words with "&"
+        Example "eris morn" becomes "eris & morn"
+        
     7. Replace single space around operators "&", "!", and "|" with the operator itself
+        Example "asher & ! ikora" becomes "asher&!ikora"
+        
     8. Replace NOT operator "!" not preceded by AND operator "&" or OR operator "|" with "&!"
+        Example: "eris and ikora not zavala" becomes "eris&ikora&!zavala"
+        
     9. Replace illegal operator combinations "&|" and "|&" with "&" and "|", respectively
+        Example: "eris and or ikora" becomes "eris&ikora"
+        Example: "eris or and ikora" becomes "eris|ikora"
+        
     10. Replace redundant operators other than parentheses with single operator
+        Example: "&&&&" becomes "&"
+        
     11. Remove all parentheses if number of opening and closing parentheses doesn't match
+        Example: "(eris and ikora" becomes "eris&ikora"
 
 # Database Search
 ### Grimoire
