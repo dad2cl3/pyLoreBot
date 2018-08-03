@@ -41,7 +41,7 @@ The bot also scrubs the search string using the following rules
     10. Replace redundant operators other than parentheses with single operator
     11. Remove all parentheses if number of opening and closing parentheses doesn't match
 
-#Database Search
+# Database Search
 ### Grimoire
 Lore in the original Destiny game was mostly contained within grimoire cards and available within the Destiny manifest. Grimoire cards in the manifest are comprised of three key fields: *cardName*, *cardIntro*, and *cardDescription*. The three fields, along with a single space separator, are concatenated together prior to creating the lexemes.
 
