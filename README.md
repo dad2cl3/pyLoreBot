@@ -97,7 +97,7 @@ SELECT * FROM manifest.fn_search_lore('grimoire', 'eris&morn') AS t1(lore_entry 
 
 # Discord
 ### Scrubbing
-The original Destiny manifest data for grimoire cards contain HTML markup that the bot scrubs. A future release will move the scrubbing into the AWS Lambda function.
+The original Destiny manifest data for grimoire cards contain HTML markup that the bot scrubs. The lore data is being scrubbed inside the AWS Lambda function. The function reads the key-value pairs in the grimoire_cleanup.json file and loops through those key-value pairs to perform a simple string replacement.
 ### Limitations
 
 Discord limits the length of messages to 6000 characters. As a result, the bot will not return a response for results that exceed the limit. A future release will address the limitation.
