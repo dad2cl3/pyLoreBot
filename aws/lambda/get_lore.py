@@ -105,11 +105,12 @@ def handler(event, context):
     if 'type' in event:
         lore_types.append(event['type'])
     else:
-        lore_types = ['grimoire', 'inventory']
+        lore_types = ['grimoire', 'inventory', 'records']
 
     print(lore_types)
     # get the lore search string
     lore_search = build_search_string(event['search'])
+    print(lore_search)
 
     # open database connection
     pg = pg8000.connect(
@@ -125,11 +126,13 @@ def handler(event, context):
     lore = {}
 
     for lore_type in lore_types:
+        #print(os.environ['sql'].format(lore_type, lore_search)) # debugging
         pg_cursor.execute(os.environ['sql'].format(lore_type, lore_search))
         query_results = pg_cursor.fetchall()
 
         results = []
         for result in query_results:
+            #print(result) # debugging
             #if result[0]['item_type'] == 'Grimoire':
             item_name = scrub(result[0]['item_name'])
             result[0]['item_name'] = item_name
@@ -139,10 +142,10 @@ def handler(event, context):
                 item_description = scrub(item_description)
                 result[0]['item_description'] = item_description
 
-            '''lore_subtitle = result[0]['lore_subtitle']
+            lore_subtitle = result[0]['lore_subtitle']
             if lore_subtitle != None:
                 lore_subtitle = scrub(result[0]['lore_subtitle'])
-                result[0]['lore_subtitle'] = lore_subtitle'''
+                result[0]['lore_subtitle'] = lore_subtitle
 
             #print('PREVIOUS: {0}'.format(result[0]['lore_description']))
             lore_description = scrub(result[0]['lore_description'])

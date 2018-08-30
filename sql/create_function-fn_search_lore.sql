@@ -73,14 +73,51 @@ BEGIN
 				) @@ to_tsquery('english', p_lore_search) = TRUE
 			)
 			ORDER BY diid.json->'displayProperties'->>'name';
+	ELSIF UPPER(p_lore_type) = 'RECORDS' THEN
+	RETURN QUERY
+	    SELECT
+            JSONB_BUILD_OBJECT(
+                'hash',
+                drd.json->>'hash',
+                'item_type',
+                'Record',
+                'item_name',
+                drd.json->'displayProperties'->>'name',
+                'item_icon',
+                'https://www.bungie.net' || (drd.json->'displayProperties'->>'icon')::TEXT,
+                'item_screenshot',
+                'https://www.bungie.net' || (drd.json->'displayProperties'->>'icon')::TEXT,
+                'item_description',
+                dld.json->>'subtitle',
+                'lore_subtitle',
+                dld.json->>'subtitle',
+                'lore_name',
+                dld.json->'displayProperties'->>'name',
+                'lore_description',
+                dld.json->'displayProperties'->>'description'
+            ) lore_entry
+        FROM manifest.mv_manifest drd, manifest.mv_manifest dld
+        WHERE drd.table_name = 'DestinyRecordDefinition' AND dld.table_name = 'DestinyLoreDefinition'
+            AND (drd.json->>'redacted')::BOOLEAN = False
+            AND drd.json->'displayProperties'->>'name' != ''
+            -- AND drd.json ? 'loreHash'
+            AND dld.json->>'hash' = drd.json->>'loreHash'
+            AND (
+                to_tsvector('english',
+                    (dld.json->'displayProperties'->>'name')::TEXT || ' ' ||
+                    COALESCE((dld.json->>'subtitle')::TEXT || ' ', '') ||
+                    (dld.json->'displayProperties'->>'description')::TEXT
+                ) @@ to_tsquery('english', p_lore_search) = TRUE
+            )
+        ORDER BY drd.json->'displayProperties'->>'name';
 	END IF;
 
 	RETURN;
 
-	EXCEPTION
-		WHEN OTHERS THEN
-			RAISE NOTICE 'Invalid input';
-			RETURN QUERY SELECT ('{"error":"invalid input"}')::JSONB;
+	--EXCEPTION
+		--WHEN OTHERS THEN
+			--RAISE NOTICE 'Invalid input';
+			--RETURN QUERY SELECT ('{"error":"invalid input"}')::JSONB;
 END
 $BODY$
   LANGUAGE plpgsql;

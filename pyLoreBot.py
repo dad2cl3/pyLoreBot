@@ -1,23 +1,12 @@
 import discord, json, math, re, requests, string
 
-with open('grimoire_cleanup.json', 'r') as grimoire_cleanup_file:
-    cleanup_params = json.load(grimoire_cleanup_file)
-
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
 
 
-def scrub (raw_string):
-
-    for cleanup in cleanup_params['grimoire_cleanup']:
-        raw_string = raw_string.replace(cleanup['old'], cleanup['new'])
-
-    return raw_string
-
-
 def build_embed(lore_entry):
 
-    lore_item_description = lore_entry['item_description']
+    '''lore_item_description = lore_entry['item_description']
 
     if lore_item_description != None:
         lore_item_description = scrub(lore_item_description)
@@ -28,6 +17,14 @@ def build_embed(lore_entry):
     lore_embed = discord.Embed(
         title=lore_item_name,
         description=lore_item_description
+    )'''
+
+    #print(lore_entry['item_name'])
+    #print(lore_entry['item_description'])
+
+    lore_embed = discord.Embed(
+        title = lore_entry['item_name'],
+        description = lore_entry['item_description']
     )
 
     # add footer if present in bot configuration
@@ -39,9 +36,9 @@ def build_embed(lore_entry):
 
     lore_description = lore_entry['lore_description']
 
-    lore_description = scrub(lore_description)
+    #lore_description = scrub(lore_description)
 
-    print('{0} - {1}'.format(lore_item_name, len(lore_description)))
+    print('{0} - {1}'.format(lore_entry['item_name'], len(lore_description)))
 
     if len(lore_description) > 1024:
         # calculate number of fields
@@ -90,6 +87,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+
     if message.content.startswith('!lore'):
         print(message.content)
 
@@ -106,7 +104,7 @@ async def on_message(message):
         print(lore_search)
 
         response = requests.get(config['url'], params={'search': lore_search})
-
+        print(response.status_code)
         if response.status_code == 200:
             lore_items = response.json()
             #print(lore_items) # debug statement
@@ -124,6 +122,13 @@ async def on_message(message):
                         lore_embed = build_embed(lore_item)
                         # print(lore_embed.fields) # debug statement
 
+                        await client.send_message(message.channel, embed=lore_embed)
+
+                if 'records' in lore_items:
+                    for lore_item in lore_items['records']:
+                        #print(lore_item)
+                        lore_embed = build_embed(lore_item)
+                        #print(lore_embed.fields) # debugging
                         await client.send_message(message.channel, embed=lore_embed)
             else:
                 troll = config['troll']
